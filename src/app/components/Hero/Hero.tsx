@@ -1,9 +1,18 @@
 'use client';
 import './Hero.css';
+import { event } from '@/app/lib/gtag';
 
 export default function Hero() {
 
   const handleResume = () => {
+    // Track the resume download event
+    event({
+      action: 'download_resume',
+      category: 'engagement',
+      label: 'Resume Download Button Click',
+    });
+    
+    // Open resume in new tab
     window.open('/resume.pdf', '_blank');
   };
 
@@ -31,7 +40,17 @@ export default function Hero() {
       </div>
 
       <div className="cta-group">
-        <button onClick={() => window.location.href = '#experience'} className="primary-btn">
+        <button 
+          onClick={() => {
+            event({
+              action: 'view_projects',
+              category: 'engagement',
+              label: 'View Projects Button Click',
+            });
+            window.location.href = '#experience';
+          }} 
+          className="primary-btn"
+        >
           View Projects
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
             <path d="M4 10h12m-4-4l4 4-4 4" stroke="currentColor" strokeWidth="2"/>
