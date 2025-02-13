@@ -2,6 +2,7 @@ import Nav from './components/Nav/Nav';
 import Hero from './components/Hero/Hero';
 import TechStack from './components/TechStack/TechStack';
 import Experience from './components/Experience/Experience';
+import Contact from './components/Contact/Contact';
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
         <Hero />
         <TechStack />
         <Experience />
+        <Contact />
       </main>
     </>
   );
