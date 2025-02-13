@@ -1,0 +1,204 @@
+body.menu-open {
+  overflow: hidden;
+}
+
+
+nav {
+    width: 100vw;
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  .nav-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.75rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    background-image: url('/images/logo.png');
+    background-size: cover;
+    background-position: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+  
+  
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+  
+  .nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+  
+  .nav-links a:hover {
+    color: var(--primary);
+  }
+  
+  .nav-links a.hire-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+
+    background: var(--primary);
+    color: white;
+    transition: all 0.2s ease;
+  }
+  
+  .nav-links a.hire-btn:hover {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 0 20px rgba(0, 102, 255, 0.4);
+    transform: translateY(-2px);
+  }
+
+
+
+
+
+
+
+
+
+
+
+  @media (max-width: 768px) {
+    .menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        z-index: 101;
+    }
+  
+    .hamburger {
+        width: 24px;
+        height: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+  
+    .line {
+        width: 100%;
+        height: 2px;
+        background-color: var(--text-primary);
+        transition: all 0.3s ease;
+    }
+  
+    /* Hamburger Animation */
+    .menu-toggle.active .line:nth-child(1) {
+        transform: translateY(9px) rotate(45deg);
+    }
+  
+    .menu-toggle.active .line:nth-child(2) {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+  
+    .menu-toggle.active .line:nth-child(3) {
+        transform: translateY(-9px) rotate(-45deg);
+    }
+  
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 100%;
+        height: 100vh;
+        background: rgba(255, 255, 255, 1);
+        backdrop-filter: blur(10px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2.5rem;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 100;
+    }
+  
+    .nav-links.active {
+        right: 0;
+    }
+  
+    .nav-links a {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        text-decoration: none;
+        opacity: 0;
+        transform: translateX(50px);
+        padding: 0.5rem 1.5rem;
+        border-radius: 0.5rem;
+    }
+  
+    .nav-links a:hover {
+        background: rgba(0, 102, 255, 0.1);
+        color: var(--primary);
+    }
+  
+    .nav-links.active a {
+        opacity: 1;
+        transform: translateX(0);
+    }
+  
+    .hire-btn {
+        margin-top: 1rem;
+        padding: 0.75rem 2rem;
+        font-size: 1.1rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        opacity: 0;
+        transform: translateX(50px);
+        box-shadow: 0 4px 12px rgba(0, 102, 255, 0.15);
+    }
+  
+    .hire-btn:hover {
+        background: var(--primary-dark);
+        color: var(--primary);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 102, 255, 0.25);
+    }
+  
+    .nav-links.active .hire-btn {
+        opacity: 1;
+        transform: translateX(0);
+    }
+  }
