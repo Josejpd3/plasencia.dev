@@ -19,7 +19,7 @@ export default function Hero() {
   return (
     <section className="hero">
       <div className="portrait-container">
-        <img src="/images/portrait.png" alt="Jose Plasencia" className="portrait" />
+        <img src="/images/portrait2.jpg" alt="Jose Plasencia" className="portrait" />
       </div>
       
 
