@@ -11,9 +11,38 @@ export default function Contact() {
     company: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [status, setStatus] = useState({
+    loading: false,
+    error: '',
+    success: false
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
+    setStatus({ loading: true, error: '', success: false });
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+
+      setStatus({ loading: false, error: '', success: true });
+      setFormData({ name: '', email: '', message: '', company: '' });
+    } catch (error) {
+      setStatus({
+        loading: false,
+        error: 'Failed to send message. Please try again.',
+        success: false
+      });
+    }
   };
 
   return (
@@ -114,13 +143,21 @@ export default function Contact() {
               />
             </div>
 
-            <button type="submit" className="submit-btn">
-              Start Conversation
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-                <path d="M10 3L17 10L10 17" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M3 10H17" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+            <button 
+              type="submit" 
+              className="submit-btn"
+              disabled={status.loading}
+            >
+              {status.loading ? 'Sending...' : 'Start Conversation'}
             </button>
+
+            {status.error && (
+              <p className="error-message">{status.error}</p>
+            )}
+
+            {status.success && (
+              <p className="success-message">Message sent successfully!</p>
+            )}
           </form>
         </div>
       </div>
