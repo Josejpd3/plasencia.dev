@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Jose Plasencia - Portfolio Website
 
-## Getting Started
+A modern, responsive portfolio website built with Next.js 13, showcasing my work as a Software Engineer.
 
-First, run the development server:
+## 🚀 Features
+
+- **Modern Tech Stack**: Built with Next.js 13, TypeScript, and CSS3
+- **Responsive Design**: Optimized for all devices and screen sizes
+- **Performance Focused**: Optimized images and assets for fast loading
+- **Interactive UI**: Smooth animations and transitions
+- **Contact Form**: Integrated email functionality using Nodemailer
+- **Analytics**: Google Analytics integration for visitor tracking
+
+## 🛠️ Built With
+
+- [Next.js 13](https://nextjs.org/) - React framework
+- [TypeScript](https://www.typescriptlang.org/) - Programming language
+- [CSS3](https://developer.mozilla.org/en-US/docs/Web/CSS) - Styling
+- [Nodemailer](https://nodemailer.com/) - Email functionality
+- [Google Analytics](https://analytics.google.com/) - Analytics
+
+## 🏃‍♂️ Running Locally
 
 ```bash
+# Clone the repository
+git clone https://github.com/Josejpd3/plasencia.dev.git
+
+# Navigate to the project directory
+cd plasencia.dev
+
+# Install dependencies
+npm install
+
+# Start the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📧 Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a `.env.local` file in the root directory with the following variables:
 
-## Learn More
+```env
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-app-specific-password
+GA_MEASUREMENT_ID=your-ga4-id
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 🤝 Contact
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Jose Plasencia - [LinkedIn](https://www.linkedin.com/in/jose-plasencia/)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Live Site: [https://plasencia.dev](https://plasencia.dev)
