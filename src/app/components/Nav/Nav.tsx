@@ -36,7 +36,6 @@ export default function Nav() {
         <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
           <a href="#home" onClick={closeMenu}>Home</a>
           <a href="#experience" onClick={closeMenu}>Experience</a>
-          <a href="#about" onClick={closeMenu}>About</a>
           <a href="#contact" onClick={closeMenu}>Contact</a>
           <a href="#contact" onClick={closeMenu} className="hire-btn">Hire Me</a>
         </div>
