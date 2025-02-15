@@ -9,7 +9,7 @@ declare global {
   }
 }
 
-export const GA_MEASUREMENT_ID = 'G-JDKX3WKLXJ' // Replace with your GA4 measurement ID
+export const GA_MEASUREMENT_ID = process.env.GA_MEASUREMENT_ID as string
 
 // Logs page views
 export const pageview = (url: string) => {
