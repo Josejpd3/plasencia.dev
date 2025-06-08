@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part Lookup</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .search-form {
+            margin-bottom: 30px;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .keypad {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            max-width: 700px;
+            margin: 20px auto;
+        }
+
+        .keypad-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .keypad button {
+            flex: 1 1 0;
+            min-width: 40px;
+            max-width: 48px;
+            padding: 15px;
+            font-size: 18px;
+            background-color: #e9ecef;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .keypad button:hover {
+            background-color: #dee2e6;
+        }
+
+        .keypad button:active {
+            background-color: #ced4da;
+        }
+
+        .keypad button.clear {
+            background-color: #dc3545;
+            color: white;
+            min-width: 80px;
+            max-width: 100px;
+        }
+
+        .keypad button.clear:hover {
+            background-color: #c82333;
+        }
+
+        .keypad button.backspace {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .keypad button.backspace:hover {
+            background-color: #e0a800;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .error {
+            color: #dc3545;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f8d7da;
+            border-radius: 4px;
+        }
+
+        .result-card {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .result-card h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .result-card p {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .offline-banner {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .quick-prefixes {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 28px;
+            margin-bottom: 12px;
+        }
+        .quick-prefixes button {
+            padding: 10px 18px;
+            font-size: 16px;
+            background-color: #17a2b8;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .quick-prefixes button:hover {
+            background-color: #138496;
+        }
+
+        .db-controls {
+            margin: 30px 0 20px 0;
+            padding: 20px;
+            background: #f1f3f6;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .db-controls label {
+            margin-right: 8px;
+        }
+        .db-controls input[type="text"] {
+            width: 120px;
+            margin-right: 8px;
+        }
+        .db-controls .locations-list {
+            margin: 8px 0 0 0;
+            font-size: 15px;
+        }
+        .db-controls .remove-location {
+            color: #dc3545;
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-left: 6px;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-dialog {
+            background: #fff;
+            padding: 28px 24px 20px 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+            max-width: 90vw;
+            min-width: 260px;
+            text-align: center;
+        }
+        .modal-message {
+            margin-bottom: 18px;
+            font-size: 18px;
+            color: #333;
+        }
+        .modal-confirm {
+            background: #dc3545;
+            color: #fff;
+            margin-right: 16px;
+        }
+        .modal-cancel {
+            background: #6c757d;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <button id="home-btn" style="background:#007bff;color:#fff;font-size:16px;padding:8px 20px;border-radius:6px;">Home</button>
+            <h1 style="flex:1;text-align:center;margin:0;">Part Lookup</h1>
+            <div style="display:flex;gap:8px;">
+                <button id="sync-btn" style="background:#28a745;color:#fff;font-size:16px;padding:8px 20px;border-radius:6px;">Sync</button>
+                <button id="show-all-btn" style="background:#6c757d;color:#fff;font-size:16px;padding:8px 20px;border-radius:6px;">Show All</button>
+            </div>
+        </div>
+
+        <div id="offline-banner" class="offline-banner" style="display: none;">
+            You are currently offline. Some features may be limited.
+        </div>
+
+        <div id="result" class="result-card" style="display: none;">
+            <h2>Part Found</h2>
+            <div id="result-content"></div>
+        </div>
+
+        <form class="search-form" id="search-form">
+            <div class="search-container">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder="Enter part number..."
+                    inputmode="none"
+                    readonly
+                >
+                <button type="submit" disabled id="search-btn">Search</button>
+            </div>
+            <div class="quick-prefixes" id="quick-prefixes"></div>
+            <div class="keypad" id="keypad"></div>
+        </form>
+
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        
+        <div id="location-management-section">
+            <h2 style="text-align:center; margin: 30px 0 10px 0; color: #007bff;">Location Management</h2>
+            <div id="location-management"></div>
+        </div>
+
+        <div id="loading-db" style="text-align:center; margin: 20px 0; color: #888;">Loading database...</div>
+
+        <div id="modal-overlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.35);z-index:1000;justify-content:center;align-items:center;">
+            <div id="modal-dialog" style="background:#fff;padding:28px 24px 20px 24px;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,0.18);max-width:90vw;min-width:260px;text-align:center;">
+                <div id="modal-message" style="margin-bottom:18px;font-size:18px;color:#333;"></div>
+                <button id="modal-confirm" style="background:#dc3545;color:#fff;margin-right:16px;">Remove</button>
+                <button id="modal-cancel" style="background:#6c757d;color:#fff;">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Modal for all parts list -->
+        <div id="all-parts-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.35);z-index:2000;justify-content:center;align-items:flex-start;overflow:auto;">
+            <div style="background:#fff;padding:28px 24px 20px 24px;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,0.18);max-width:95vw;min-width:320px;margin:40px auto;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                    <h2 style="margin:0;font-size:22px;color:#007bff;">All Parts & Locations</h2>
+                    <button id="close-all-parts-modal" style="background:#dc3545;color:#fff;padding:6px 18px;border-radius:5px;">Close</button>
+                </div>
+                <div id="all-parts-table-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // IndexedDB setup
+        const DB_NAME = 'part_lookup_db';
+        const DB_VERSION = 2;
+        const STORE_NAME = 'parts';
+        const SYNC_QUEUE = 'syncQueue';
+        let db;
+
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                request.onerror = (e) => reject(e);
+                request.onsuccess = (e) => {
+                    db = request.result;
+                    resolve(db);
+                };
+                request.onupgradeneeded = (e) => {
+                    db = request.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME, { keyPath: 'partNumber' });
+                    }
+                    if (!db.objectStoreNames.contains(SYNC_QUEUE)) {
+                        db.createObjectStore(SYNC_QUEUE, { autoIncrement: true });
+                    }
+                };
+            });
+        }
+
+        function getPart(partNumber) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readonly');
+                const store = tx.objectStore(STORE_NAME);
+                const req = store.get(partNumber);
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        function getAllParts() {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readonly');
+                const store = tx.objectStore(STORE_NAME);
+                const req = store.getAll();
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        function addOrUpdatePart(partNumber, location) {
+            return getPart(partNumber).then(existing => {
+                let locations = existing && existing.locations ? existing.locations : [];
+                // Avoid duplicates
+                if (!locations.includes(location)) {
+                    locations.push(location);
+                }
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(STORE_NAME, 'readwrite');
+                    const store = tx.objectStore(STORE_NAME);
+                    store.put({ partNumber, locations });
+                    tx.oncomplete = () => {
+                        addToSyncQueue('addOrUpdate', { partNumber, location }).then(() => {
+                            triggerSync();
+                            resolve();
+                        });
+                    };
+                    tx.onerror = reject;
+                });
+            });
+        }
+
+        function removePart(partNumber) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                const store = tx.objectStore(STORE_NAME);
+                store.delete(partNumber);
+                tx.oncomplete = () => {
+                    addToSyncQueue('removePart', { partNumber }).then(() => {
+                        triggerSync();
+                        resolve();
+                    });
+                };
+                tx.onerror = reject;
+            });
+        }
+
+        function removeLocation(partNumber, location) {
+            return getPart(partNumber).then(existing => {
+                if (!existing) return;
+                let locations = existing.locations.filter(l => l !== location);
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(STORE_NAME, 'readwrite');
+                    const store = tx.objectStore(STORE_NAME);
+                    if (locations.length === 0) {
+                        store.delete(partNumber);
+                    } else {
+                        store.put({ partNumber, locations });
+                    }
+                    tx.oncomplete = () => {
+                        addToSyncQueue('removeLocation', { partNumber, location }).then(() => {
+                            triggerSync();
+                            resolve();
+                        });
+                    };
+                    tx.onerror = reject;
+                });
+            });
+        }
+
+        // Sync queue helpers
+        function addToSyncQueue(action, payload) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(SYNC_QUEUE, 'readwrite');
+                const store = tx.objectStore(SYNC_QUEUE);
+                store.add({ action, payload, timestamp: Date.now() });
+                tx.oncomplete = resolve;
+                tx.onerror = reject;
+            });
+        }
+        function getSyncQueue() {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(SYNC_QUEUE, 'readonly');
+                const store = tx.objectStore(SYNC_QUEUE);
+                const req = store.getAll();
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+        function clearSyncQueue() {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(SYNC_QUEUE, 'readwrite');
+                const store = tx.objectStore(SYNC_QUEUE);
+                store.clear();
+                tx.oncomplete = resolve;
+                tx.onerror = reject;
+            });
+        }
+        function removeFirstSyncQueueItem() {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(SYNC_QUEUE, 'readwrite');
+                const store = tx.objectStore(SYNC_QUEUE);
+                // Get first key
+                const req = store.openCursor();
+                req.onsuccess = function(e) {
+                    const cursor = e.target.result;
+                    if (cursor) {
+                        store.delete(cursor.primaryKey);
+                    }
+                    tx.oncomplete = resolve;
+                };
+                req.onerror = reject;
+            });
+        }
+
+        // Sync status UI
+        const syncStatusDiv = document.createElement('div');
+        syncStatusDiv.id = 'sync-status';
+        syncStatusDiv.style.cssText = 'text-align:center;margin:10px 0;color:#888;';
+        document.querySelector('.container').appendChild(syncStatusDiv);
+
+        function updateSyncStatus(count) {
+            if (count === 0) {
+                syncStatusDiv.textContent = 'All changes synced.';
+            } else {
+                syncStatusDiv.textContent = `${count} change${count > 1 ? 's' : ''} pending sync...`;
+            }
+        }
+
+        // Sync logic
+        let syncing = false;
+        function processSyncQueue() {
+            // No-op: real sync is handled by manual sync button
+        }
+
+        // Call this after every change
+        function triggerSync() {
+            getSyncQueue().then(queue => updateSyncStatus(queue.length));
+            if (navigator.onLine) {
+                processSyncQueue();
+            }
+        }
+
+        // Location management UI (dynamic)
+        const locationManagement = document.getElementById('location-management');
+
+        function renderLocationManagement(partNumber, part) {
+            let html = '';
+            if (part) {
+                html += `<div class="result-card" style="margin-bottom:16px;">
+                    <h2>Locations for <span style="color:#007bff">${partNumber}</span></h2>
+                    <div class="locations-list">
+                        ${part.locations.map(loc => `<span style="margin-right:10px;">${loc} <button class="remove-location" data-part="${partNumber}" data-location="${loc}">x</button></span>`).join('')}
+                    </div>
+                </div>`;
+                html += `<div id="add-location-wizard" style="margin-top:10px;"></div>`;
+            } else if (partNumber) {
+                html += `<div class="result-card" style="margin-bottom:16px;">
+                    <h2>Part number <span style="color:#dc3545">${partNumber}</span> not found.</h2>
+                </div>`;
+                html += `<div id="add-location-wizard" style="margin-top:10px;"></div>`;
+            } else {
+                html = '';
+            }
+            locationManagement.innerHTML = html;
+            if (partNumber) renderLocationWizard(partNumber);
+        }
+
+        // Guided location wizard logic
+        function renderLocationWizard(partNumber) {
+            const wizard = document.getElementById('add-location-wizard');
+            if (!wizard) return;
+            // State
+            let aisle = null, section = null, row = null;
+            // Render step 1
+            function renderStep1() {
+                wizard.innerHTML = `<div style="font-weight:bold; color:#333; margin-bottom:8px;">Add a Location for this Part</div>
+                    <div style="margin-bottom:8px;">Select Aisle:</div>
+                    <div style="display:flex; gap:12px; margin-bottom:12px;">
+                        <button class="aisle-btn" data-aisle="14">14</button>
+                        <button class="aisle-btn" data-aisle="15">15</button>
+                        <button class="aisle-btn" data-aisle="16">16</button>
+                    </div>`;
+            }
+            // Render step 2
+            function renderStep2() {
+                wizard.innerHTML = `<div style="font-weight:bold; color:#333; margin-bottom:8px;">Add a Location for this Part</div>
+                    <div style="margin-bottom:8px;">Aisle: <strong>${aisle}</strong></div>
+                    <div style="margin-bottom:8px;">Select Section:</div>
+                    <div style="display:flex; gap:12px; margin-bottom:12px;">
+                        <button class="section-btn" data-section="A">A</button>
+                        <button class="section-btn" data-section="B">B</button>
+                        <button class="section-btn" data-section="C">C</button>
+                        <button class="section-btn" data-section="D">D</button>
+                        ${aisle === "15" ? '<button class="section-btn" data-section="G">G</button>' : ''}
+                    </div>
+                    <button class="back-btn">Back</button>`;
+            }
+            // Render step 3
+            function renderStep3() {
+                wizard.innerHTML = `<div style="font-weight:bold; color:#333; margin-bottom:8px;">Add a Location for this Part</div>
+                    <div style="margin-bottom:8px;">Aisle: <strong>${aisle}</strong> | Section: <strong>${section}</strong></div>
+                    <div style="margin-bottom:8px;">Select Row:</div>
+                    <div style="display:flex; gap:12px; margin-bottom:12px;">
+                        <button class="row-btn" data-row="1">1</button>
+                        <button class="row-btn" data-row="2">2</button>
+                        <button class="row-btn" data-row="3">3</button>
+                        <button class="row-btn" data-row="4">4</button>
+                    </div>
+                    <button class="back-btn">Back</button>`;
+            }
+            // Render summary/add
+            function renderSummary() {
+                const location = `${aisle}${section}${row}`;
+                wizard.innerHTML = `<div style="font-weight:bold; color:#333; margin-bottom:8px;">Add a Location for this Part</div>
+                    <div style="margin-bottom:8px;">Location: <strong>${location}</strong></div>
+                    <button class="add-location-final" style="background:#28a745;color:#fff;font-size:18px;padding:14px 32px;margin-bottom:8px;">Confirm Location</button>
+                    <button class="back-btn">Back</button>`;
+            }
+            // Initial render
+            renderStep1();
+            // Event delegation for wizard
+            wizard.onclick = function(e) {
+                if (e.target.classList.contains('aisle-btn')) {
+                    aisle = e.target.getAttribute('data-aisle');
+                    renderStep2();
+                } else if (e.target.classList.contains('section-btn')) {
+                    section = e.target.getAttribute('data-section');
+                    renderStep3();
+                } else if (e.target.classList.contains('row-btn')) {
+                    row = e.target.getAttribute('data-row');
+                    renderSummary();
+                } else if (e.target.classList.contains('back-btn')) {
+                    if (row) {
+                        row = null;
+                        renderStep3();
+                    } else if (section) {
+                        section = null;
+                        renderStep2();
+                    } else if (aisle) {
+                        aisle = null;
+                        renderStep1();
+                    }
+                } else if (e.target.classList.contains('add-location-final')) {
+                    const location = `${aisle}${section}${row}`;
+                    addOrUpdatePart(partNumber, location).then(() => {
+                        getPart(partNumber).then(part => {
+                            renderLocationManagement(partNumber, part);
+                            showResult(part);
+                        });
+                    });
+                }
+            };
+        }
+
+        // Handle add location form submit
+        locationManagement.addEventListener('submit', function(e) {
+            if (e.target && e.target.id === 'add-location-form') {
+                e.preventDefault();
+                const aisle = document.getElementById('aisle-select').value;
+                const section = document.getElementById('section-select').value;
+                const row = document.getElementById('row-select').value;
+                const partNumber = searchInput.value.trim();
+                if (!partNumber || !aisle || !section || !row) return;
+                const location = `${aisle}${section}${row}`;
+                addOrUpdatePart(partNumber, location).then(() => {
+                    getPart(partNumber).then(part => {
+                        renderLocationManagement(partNumber, part);
+                        showResult(part);
+                    });
+                });
+            }
+        });
+
+        // Modal logic
+        let modalResolve = null;
+        function showModal(message) {
+            return new Promise((resolve) => {
+                modalResolve = resolve;
+                document.getElementById('modal-message').textContent = message;
+                document.getElementById('modal-overlay').style.display = 'flex';
+            });
+        }
+        function hideModal() {
+            document.getElementById('modal-overlay').style.display = 'none';
+        }
+        document.getElementById('modal-confirm').onclick = function() {
+            hideModal();
+            if (modalResolve) modalResolve(true);
+        };
+        document.getElementById('modal-cancel').onclick = function() {
+            hideModal();
+            if (modalResolve) modalResolve(false);
+        };
+
+        locationManagement.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-location')) {
+                const partNumber = e.target.getAttribute('data-part');
+                const location = e.target.getAttribute('data-location');
+                showModal(`Remove ${partNumber} from ${location} location?`).then(confirmed => {
+                    if (confirmed) {
+                        removeLocation(partNumber, location).then(() => {
+                            getPart(partNumber).then(part => {
+                                renderLocationManagement(partNumber, part);
+                                if (part) {
+                                    showResult(part);
+                                } else {
+                                    resultDiv.style.display = 'none';
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+        });
+
+        // DOM Elements
+        const searchForm = document.getElementById('search-form');
+        const searchInput = document.getElementById('search-input');
+        const errorDiv = document.getElementById('error');
+        const resultDiv = document.getElementById('result');
+        const resultContent = document.getElementById('result-content');
+        const offlineBanner = document.getElementById('offline-banner');
+        const keypad = document.getElementById('keypad');
+        const quickPrefixes = document.getElementById('quick-prefixes');
+        const searchButton = document.getElementById('search-btn');
+        const loadingDb = document.getElementById('loading-db');
+
+        // Keyboard layout rows
+        const keyboardRows = [
+            ["1","2","3","4","5","6","7","8","9","0","-"],
+            ["Q","W","E","R","T","Y","U","I","O","P"],
+            ["A","S","D","F","G","H","J","K","L"],
+            ["Z","X","C","V","B","N","M","⌫","Clear"]
+        ];
+
+        // Key types for styling
+        const specialKeyMap = {
+            "⌫": "backspace",
+            "Clear": "clear"
+        };
+
+        // Common part number prefixes
+        const partPrefixes = ["M27-", "M2700-", "MH750-"];
+
+        // Generate keypad
+        function generateKeypad() {
+            keypad.innerHTML = '';
+            keyboardRows.forEach((row, rowIndex) => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'keypad-row';
+                row.forEach(key => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.textContent = key;
+                    if (specialKeyMap[key]) {
+                        btn.classList.add(specialKeyMap[key]);
+                    } else {
+                        btn.dataset.key = key;
+                    }
+                    rowDiv.appendChild(btn);
+                });
+                keypad.appendChild(rowDiv);
+            });
+        }
+        generateKeypad();
+
+        // Generate quick-insert prefix buttons
+        function generateQuickPrefixes() {
+            quickPrefixes.innerHTML = '';
+            partPrefixes.forEach(prefix => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.textContent = prefix;
+                btn.addEventListener('click', () => {
+                    // Replace any existing prefix if present, or just insert at start
+                    // We'll define prefix as the first match from partPrefixes if present
+                    let value = searchInput.value;
+                    const found = partPrefixes.find(p => value.startsWith(p));
+                    if (found) {
+                        value = value.replace(found, prefix);
+                    } else {
+                        value = prefix + value;
+                    }
+                    searchInput.value = value;
+                    searchInput.focus();
+                });
+                quickPrefixes.appendChild(btn);
+            });
+        }
+        generateQuickPrefixes();
+
+        // Event Listeners
+        window.addEventListener('online', () => {
+            isOnline = true;
+            offlineBanner.style.display = 'none';
+            triggerSync();
+        });
+
+        window.addEventListener('offline', () => {
+            isOnline = false;
+            offlineBanner.style.display = 'block';
+        });
+
+        // Only enable search after DB is ready
+        openDB().then(() => {
+            searchInput.disabled = false;
+            searchButton.disabled = false;
+            if (loadingDb) loadingDb.style.display = 'none';
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            handleSearch();
+            });
+        });
+
+        // Keypad event delegation
+        keypad.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                if (e.target.classList.contains('clear')) {
+                    searchInput.value = '';
+                } else if (e.target.classList.contains('backspace')) {
+                    searchInput.value = searchInput.value.slice(0, -1);
+                } else if (e.target.dataset.key) {
+                    searchInput.value += e.target.dataset.key;
+                }
+                searchInput.focus();
+            }
+        });
+
+        // Functions
+        function handleSearch() {
+            const searchQuery = searchInput.value.trim();
+            errorDiv.style.display = 'none';
+            resultDiv.style.display = 'none';
+            locationManagement.innerHTML = '';
+
+            if (!searchQuery) {
+                showError("Please enter a part number");
+                return;
+            }
+
+            getPart(searchQuery).then(result => {
+                renderLocationManagement(searchQuery, result);
+            if (result) {
+                showResult(result);
+            } else {
+                showError("Part number not found");
+            }
+            });
+        }
+
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function showResult(part) {
+            resultContent.innerHTML = `
+                <p><strong>Part Number:</strong> ${part.partNumber}</p>
+                <p><strong>Locations:</strong> ${part.locations.map(loc => `<span>${loc}</span>`).join(', ')}</p>
+            `;
+            resultDiv.style.display = 'block';
+        }
+
+        // Home button logic
+        document.getElementById('home-btn').onclick = function() {
+            searchInput.value = '';
+            resultDiv.style.display = 'none';
+            locationManagement.innerHTML = '';
+            errorDiv.style.display = 'none';
+        };
+
+        // Manual Sync Button Logic
+        document.getElementById('sync-btn').onclick = async function() {
+            syncStatusDiv.textContent = 'Syncing...';
+            console.log('--- SYNC STARTED ---');
+            // 1. Push local unsynced changes (sync queue) to server
+            const queue = await getSyncQueue();
+            let pushErrors = 0;
+            for (const item of queue) {
+                try {
+                    if (item.action === 'addOrUpdate') {
+                        console.log('Pushing addOrUpdate:', item.payload);
+                        await fetch('https://part-lookup-api-6b18b790cb21.herokuapp.com/api/parts', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ partNumber: item.payload.partNumber, location: item.payload.location })
+                        });
+                    } else if (item.action === 'removeLocation') {
+                        console.log('Pushing removeLocation:', item.payload);
+                        await fetch('https://part-lookup-api-6b18b790cb21.herokuapp.com/api/parts/remove-location', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ partNumber: item.payload.partNumber, location: item.payload.location })
+                        });
+                    } else if (item.action === 'removePart') {
+                        console.log('Pushing removePart:', item.payload);
+                        await fetch('https://part-lookup-api-6b18b790cb21.herokuapp.com/api/parts/remove', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ partNumber: item.payload.partNumber })
+                        });
+                    }
+                } catch (err) {
+                    pushErrors++;
+                    console.error('Push error:', err, item);
+                }
+            }
+            // 2. Pull all data from server
+            let serverParts = [];
+            try {
+                console.log('Pulling all data from server...');
+                const res = await fetch('https://part-lookup-api-6b18b790cb21.herokuapp.com/api/parts');
+                serverParts = await res.json();
+                console.log('Received from server:', serverParts);
+            } catch (err) {
+                syncStatusDiv.textContent = 'Sync failed: could not fetch from server.';
+                console.error('Pull error:', err);
+                return;
+            }
+            // 3. Overwrite local IndexedDB with server data
+            console.log('Overwriting local IndexedDB with server data...');
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            store.clear();
+            serverParts.forEach(part => store.put(part));
+            tx.oncomplete = () => {
+                clearSyncQueue().then(() => {
+                    updateSyncStatus(0);
+                    if (pushErrors > 0) {
+                        syncStatusDiv.textContent = `Sync complete with ${pushErrors} push error(s).`;
+                    } else {
+                        syncStatusDiv.textContent = 'Sync complete!';
+                    }
+                    console.log('--- SYNC COMPLETE ---');
+                    // Optionally, refresh UI if needed
+                    if (searchInput.value.trim()) {
+                        handleSearch();
+                    } else {
+                        locationManagement.innerHTML = '';
+                        resultDiv.style.display = 'none';
+                    }
+                });
+            };
+        };
+
+        // Show All Parts Button Logic
+        document.getElementById('show-all-btn').onclick = async function() {
+            const modal = document.getElementById('all-parts-modal');
+            const tableContainer = document.getElementById('all-parts-table-container');
+            // Fetch all parts from IndexedDB
+            const allParts = await getAllParts();
+            // Sort by part number
+            allParts.sort((a, b) => a.partNumber.localeCompare(b.partNumber));
+            // Build table
+            let html = '<table style="border-collapse:collapse;width:100%;font-size:16px;">';
+            html += '<thead><tr style="background:#f1f3f6;"><th style="padding:8px 12px;text-align:left;">Part Number</th><th style="padding:8px 12px;text-align:left;">Locations</th></tr></thead><tbody>';
+            for (const part of allParts) {
+                html += `<tr><td style="padding:6px 12px;border-bottom:1px solid #eee;">${part.partNumber}</td><td style="padding:6px 12px;border-bottom:1px solid #eee;">${(part.locations||[]).join(', ')}</td></tr>`;
+            }
+            html += '</tbody></table>';
+            tableContainer.innerHTML = html;
+            modal.style.display = 'flex';
+        };
+        document.getElementById('close-all-parts-modal').onclick = function() {
+            document.getElementById('all-parts-modal').style.display = 'none';
+        };
+    </script>
+</body>
+</html> 
