@@ -55,7 +55,7 @@ export default function Experience() {
                         <div key={i} className="project-card more-projects">
                           <div className="project-count">
                             <span>{image.showMore}+</span>
-                            <p>More Projects</p>
+                            <p>Client Projects</p>
                           </div>
                         </div>
                       ) : (

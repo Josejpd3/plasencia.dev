@@ -73,12 +73,12 @@ export const experiences: Experience[] = [
         },
         {
           src: "/images/projects/more-projects.png",
-          alt: "More Projects",
+          alt: "Client Projects",
           width: 1920,
           height: 1080,
-          caption: "More Projects",
-          metric: "3+ Projects",
-          showMore: 3
+          caption: "Client Projects",
+          metric: "14+ Projects",
+          showMore: 14
 
         }
       ],
