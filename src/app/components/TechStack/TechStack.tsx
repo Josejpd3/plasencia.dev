@@ -1,11 +1,11 @@
-import { React, Node, MongoDB, AWS } from '../Icon'
+import { React, Node, MongoDB, AWS, Express } from '../Icon'
 import './TechStack.css';
 
 export default function TechStack() {
 
   return (
     <section className="tech-stack">
-      <h3>Tech Stack</h3>
+      <p>Tech Stack</p>
       <div className="tech-grid">
         <div className="tech-item">
           <React/>        
@@ -23,8 +23,8 @@ export default function TechStack() {
         </div>
 
         <div className="tech-item">
-          <AWS/>        
-          <span>AWS</span>
+          <Express/>        
+          <span>Express.js</span>
         </div>
       </div>
 

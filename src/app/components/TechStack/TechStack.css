@@ -6,7 +6,7 @@
     z-index: 1;
   }
   
-  .tech-stack h3 {
+  .tech-stack p {
     color: var(--text-secondary);
     font-weight: 500;
     margin-bottom: 2rem;
