@@ -228,17 +228,7 @@ h1.hero-title {
     }
 }
 
-@media (max-width: 480px) {
-    h1.hero-title {
-      font-size: 2rem;
-    }
-    
-    .portrait {
-      width: 90vw;
-      max-width: 400px;
-      min-width: 200px;
-    }
-}
+
 
 @media (max-width: 475px) {
     h1.hero-title {
@@ -258,7 +248,7 @@ h1.hero-title {
     
     .portrait {
       width: 95vw;
-      max-width: 300px;
+      max-width: 500px;
       min-width: 180px;
     }
 }
